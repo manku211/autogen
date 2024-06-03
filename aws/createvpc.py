@@ -3,6 +3,7 @@ import boto3
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 from typing import Type
+from typing import Annotated
 
 load_dotenv(".env")
 
@@ -23,7 +24,7 @@ class CreateVpcInput(BaseModel):
     vpc_cidr_block: str = Field(description="should be a string")
 
 class CreateVpc(BaseModel):
-    # name = "create_vpc"
+    name = "create_vpc"
     description = "Initiate the function when user asks to create vpc"
     args_schema: Type[BaseModel] = CreateVpcInput
 

@@ -6,6 +6,7 @@ config_list = [
     {
         "model": "gpt-4-0125-preview",
         "api_key": os.environ["OPENAI_API_KEY"],
+        "base_url":os.environ["BASE_URL"]
     }
 ]
 
@@ -17,7 +18,7 @@ gpt4_config = {
     "functions": [
         {
             "name": "create_vpc",
-            "description": "call the function and print",
+            "description": "call the function and return the values from the function",
             "parameters": {
                 "type": "object",
                 "properties": {},
@@ -26,7 +27,7 @@ gpt4_config = {
         },
         {
             "name": "create_redis",
-            "description": "call the function and print",
+            "description": "call the function and return the values from the function",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -38,12 +39,26 @@ gpt4_config = {
                     "type": "string",
                     "description": "Id of the image ubuntu",
                 },
-                "redispassword": {
+                },
+                 "required": ["pem_file","instance_id"]
+            }
+        },
+        {
+            "name": "create_user",
+            "description": "call the function and return the values from the function",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "user_name": {
                     "type": "string",
-                    "description": "password of redis",
+                    "description": " provide the username  for the aws",
+                },
+                "project_name": {
+                    "type": "string",
+                    "description": "provide the project name for providing bucket name",
                 },
                 },
-                 "required": ["pem_file","instance_id","redispassword"]
+                 "required": ["user_name","project_name"]
             }
         }
 

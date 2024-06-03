@@ -3,10 +3,11 @@ import autogen
 from dotenv import load_dotenv
 # from autogenvpc import gpt4_config
 from config import gpt4_config 
-from helpers.system_message import user_agent_task, create_vpc,create_redis
+from helpers.system_message import user_agent_task, create_vpc,create_redis,create_user
 from autogen.oai.openai_utils import config_list_from_dotenv
 from aws.createvpc import CreateVpc
 from aws.createredis import CreateRedis
+from aws.create_user import CreateUser
 
 # import matplotlib.pyplot as plt
 # import networkx as nx
@@ -41,27 +42,14 @@ create_redis_agent= autogen.ConversableAgent(
     llm_config=gpt4_config,
     human_input_mode="NEVER"
 )
+create_user_agent= autogen.ConversableAgent(
+    "create_user_agent",
+    system_message=create_user,
+    llm_config=gpt4_config,
+    human_input_mode="NEVER"
+)
 
 
-# load_dotenv(".env")
-
-# config_list = config_list_from_dotenv(
-#     dotenv_file_path=".env",
-#     model_api_key_map={"gpt-4": "OPENAI_API_KEY"},
-#     filter_dict={"model": {"gpt-4"}},
-# )
-
-# gpt4_config = {
-#     "cache_seed": None,
-#     "temperature": 0,
-#     "config_list": config_list,
-#     "timeout": 100,
-
-# }
-
-# gpt_config["functions"] = [
-#     generate_function_config(amplify)
-#     ]
 graph_dict[user_proxy] = [
     create_vpc_agent
 ]
@@ -75,16 +63,24 @@ graph_dict[user_proxy] = [
 graph_dict[create_redis_agent] = [
     user_proxy
 ]
+graph_dict[user_proxy] = [
+   create_user_agent 
+]
+graph_dict[create_user_agent] = [
+    user_proxy
+]
 
 
 
 agents = [ 
     user_proxy,
     create_vpc_agent,
-    create_redis_agent
+    create_redis_agent,
+    create_user_agent
 ]
 create_vpc=CreateVpc()
 create_redis=CreateRedis()
+create_user=CreateUser()
 
 
     
@@ -102,6 +98,11 @@ create_redis_agent.register_function(
 user_proxy.register_function(
     function_map={
         'create_redis': create_redis.deploy_redis_using_docker
+    }
+)
+user_proxy.register_function(
+    function_map={
+        'create_user': create_user.create_user
     }
 )
 

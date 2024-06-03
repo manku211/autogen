@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from typing import Type
 from typing import Annotated
 import subprocess, time
+import random,string
 
 load_dotenv(".env")
 
@@ -16,17 +17,12 @@ create_redis_json = {
     "instance_id": {
         "description": "instance_id to give",
         "type": "Required",
-    },
-    "password": {
-        "description": "required password from user in order to create redis",
-        "type": "Required",
-    },
+    }
 }
 
 class CreateRedisInput(BaseModel):
     pemfile: str = Field(description="should be a string")
     instance_id: str = Field(description="should be a string")
-    password: str = Field(description="should be a string")
 
 class CreateRedis(BaseModel):
     name = "create_redis"
@@ -37,12 +33,10 @@ class CreateRedis(BaseModel):
     access_key = os.getenv('ACCESS_KEY')
     secret_key = os.getenv('SECRET_KEY')
     
-    def deploy_redis_using_docker(self, pem_file: str,  instance_id: str, redispassword: str):
+    def deploy_redis_using_docker(self, pem_file: str,  instance_id: str):
             instance_user_name = "ubuntu"
-            is_gitlab_file_present = False
-            gitlab_file_name = '.gitlab-ci.yml'
-            gitlab_file_content = ''
-            password=redispassword
+            password=generate_random_password()
+            print(password)
             host_directory="redisdata"
             print(pem_file)
 
@@ -91,3 +85,8 @@ def run_remote_command(command, pem_file, instance_user_name, public_ip_address)
          return result.stdout.strip()
         except subprocess.CalledProcessError as e:
                 print(f"An error occurred: {e}")
+
+def generate_random_password(length=12):
+    characters = string.ascii_letters + string.digits + string.punctuation
+    password = ''.join(random.choice(characters) for i in range(length))
+    return password
