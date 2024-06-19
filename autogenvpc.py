@@ -26,6 +26,6 @@ manager = autogen.GroupChatManager(
 
 result = user_proxy.initiate_chat(
     manager,
-    message="Ask from human input which agent you want to create 'VPC' or to craete 'redis' or to create 'User'",
+    message="Ask from human input which agent you want to create 'VPC' or to craete 'redis' or to create 'User' or to create 'Amplify'",
     clear_history=True,
 )

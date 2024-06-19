@@ -11,7 +11,7 @@ config_list = [
 ]
 
 gpt4_config = {
-    "cache_seed": 42,
+    "cache_seed": None,
     "temperature": 0,
     "config_list": config_list,
     "timeout": 120,
@@ -59,6 +59,42 @@ gpt4_config = {
                 },
                 },
                  "required": ["user_name","project_name"]
+            }
+        },
+        {
+            "name": "create_amplify",
+            "description": "call the function and return the values from the function",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "app_name": {
+                    "type": "string",
+                    "description": "provide the app_name for the amplify",
+                },
+                "existing_repo_url": {
+                    "type": "string",
+                    "description": "provide the repo url for deploying",
+                },
+                "github_token": {
+                    "type": "string",
+                    "description": "provide the github token access for deploying",
+                },
+                "branch_name": {
+                    "type": "string",
+                    "description": "provide the branch name for deploying",
+                },
+                "enable_environment_variables":
+                {
+                    "type": "boolean",
+                    "description": "provide provide 'TRUE' or 'FALSE' if you need env",    
+                },
+                "env":
+                {
+                    "type": "string",
+                  "description": "provide provide the env if enable_environment_variables is TRUE",   
+                }
+                },
+                 "required": ["app_name","existing_repo_url","github_token","branch_name","enable_environment_variables"]
             }
         }
 

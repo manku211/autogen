@@ -3,11 +3,12 @@ import autogen
 from dotenv import load_dotenv
 # from autogenvpc import gpt4_config
 from config import gpt4_config 
-from helpers.system_message import user_agent_task, create_vpc,create_redis,create_user
+from helpers.system_message import user_agent_task, create_vpc,create_redis,create_user,create_amplify
 from autogen.oai.openai_utils import config_list_from_dotenv
 from aws.createvpc import CreateVpc
 from aws.createredis import CreateRedis
 from aws.create_user import CreateUser
+from aws.create_amplify import CreateAmplify
 
 # import matplotlib.pyplot as plt
 # import networkx as nx
@@ -48,6 +49,13 @@ create_user_agent= autogen.ConversableAgent(
     llm_config=gpt4_config,
     human_input_mode="NEVER"
 )
+create_amplify_agent= autogen.ConversableAgent(
+    "create_amplify_agent",
+    system_message=create_amplify,
+    llm_config=gpt4_config,
+    human_input_mode="NEVER"
+)
+
 
 
 graph_dict[user_proxy] = [
@@ -69,18 +77,25 @@ graph_dict[user_proxy] = [
 graph_dict[create_user_agent] = [
     user_proxy
 ]
-
+graph_dict[user_proxy] = [
+   create_amplify_agent 
+]
+graph_dict[create_amplify_agent] = [
+    user_proxy
+]
 
 
 agents = [ 
     user_proxy,
     create_vpc_agent,
     create_redis_agent,
-    create_user_agent
+    create_user_agent,
+    create_amplify_agent
 ]
 create_vpc=CreateVpc()
 create_redis=CreateRedis()
 create_user=CreateUser()
+create_amplify=CreateAmplify()
 
 
     
@@ -103,6 +118,11 @@ user_proxy.register_function(
 user_proxy.register_function(
     function_map={
         'create_user': create_user.create_user
+    }
+)
+user_proxy.register_function(
+    function_map={
+        'create_amplify': create_amplify.create_amplify
     }
 )
 
