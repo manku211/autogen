@@ -1,3 +1,11 @@
 .env
 .cache
 _pycache__
+__pycache__/
+*.pyc
+terraform/amplify/.terraform/
+terraform/amplify/.terraform.*
+terraform/amplify/terraform.*
+terraform/amplify/*.tfstate
+terraform/amplify/*.tfstate.*
+terraform/amplify/*.backup
