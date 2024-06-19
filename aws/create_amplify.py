@@ -46,16 +46,9 @@ def write_tfvars_file(variables, file_path):
             else:
                 f.write(f'{key} = {value}\n')  
 
-# def run_remote_command(command, pem_file, instance_user_name, public_ip_address):
-#         ssh_command = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', pem_file,
-#                     f"{instance_user_name}@{public_ip_address}"] + command
-#         try:
-#          result = subprocess.run(ssh_command, check=True, capture_output=True, text=True)
-#          return result.stdout.strip()
-#         except subprocess.CalledProcessError as e:
-#                 print(f"An error occurred: {e}")
 
 def run_terraform(directory):
+    print("running terraform")
     commands = [
         ['terraform', 'init'],
         ['terraform', 'validate'],
@@ -71,8 +64,23 @@ def run_terraform(directory):
             print(f"An error occurred while running {' '.join(command)}: {e}")
             print(e.stderr)
             return False
-
-    return True
+    try:
+        result = subprocess.run(
+            ['terraform', 'output', '-json'],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=directory
+        )
+        outputs = json.loads(result.stdout)
+        app_id = outputs['default_appid']['value']
+        domain = outputs['default_domain']['value']
+        return app_id, domain
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred: {e}")
+        print(e.stderr)
+        return False 
+    #   return None,None
 
 
 
@@ -119,7 +127,8 @@ class CreateAmplify(BaseModel):
             with open('terraform/amplify/env.json', 'w') as json_file:
                 json_file.write(json_data)
       terraform_directory = 'terraform/amplify'    
-      run_terraform(terraform_directory)        
+      app_id, domain_link=run_terraform(terraform_directory)
+      return {'creation of amplify done with the': f"app_id {app_id}", "domain_link":domain_link}        
           
 
     

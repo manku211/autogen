@@ -70,3 +70,12 @@ resource "aws_amplify_webhook" "master" {
     command = "curl -X POST -d {} '${aws_amplify_webhook.master.url}&operation=startbuild' -H 'Content-Type:application/json'"
   }
 }
+
+output "default_domain" {
+  description = "The amplify domain (non-custom)."
+  value       = aws_amplify_app.example.default_domain
+}
+output "default_appid" {
+  description = "The amplify app_id ."
+  value       = aws_amplify_app.example.id
+}
