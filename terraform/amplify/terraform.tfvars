@@ -1,0 +1,10 @@
+app_name = "web-admin-angular-tractor-tuesday" # should be base folder name 
+existing_repo_url = "https://github.com/manku211/web-angular-admin-tractor-tuesday"
+ssm_github_access_token_name = ""
+branch_name = "dev"
+framework = "Next" # should be reactjs,angularjs and nextjs
+enable_environment_variables = false
+aws_access_key = ""
+aws_secret_key = ""
+region = "us-east-1"
+build = ".next"
