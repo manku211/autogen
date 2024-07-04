@@ -46,3 +46,25 @@ variable "branch_name" {
   description = "The name of the branch to be deployed"
   type        = string
 }
+
+variable "framework" {
+    description = "The name of the framework to be deployed"
+  type        = string
+  default = "React"
+}
+
+variable "platform" {
+    description = "The name of the platform to be deployed"
+  type        = string
+  default = "WEB"
+}
+
+variable "build" {
+    description = "The build folder name after build"
+  type        = string
+  default = "dist"
+}
+
+
+
+

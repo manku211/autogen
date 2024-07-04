@@ -20,9 +20,16 @@ data "local_file" "config" {
   filename = "env.json"
 }
 
+# data "template_file" "buildspec" {
+#   template = file("${path.module}/${var.framework}.tpl")
+# }
+
 locals {
   config = var.enable_environment_variables ? jsondecode(data.local_file.config[0].content) : {}
   env  = var.enable_environment_variables ? local.config : {}
+  frameworks =var.framework=="Next" ? "Next.js - SSR" : var.framework
+  platform = var.framework=="Next"? "WEB_COMPUTE" : var.platform
+#   yaml_rg= yamldecode(file("${path.module}/"))
 }
 
 resource "aws_amplify_app" "example" {
@@ -32,6 +39,9 @@ resource "aws_amplify_app" "example" {
   enable_branch_auto_build    = true
   environment_variables =       var.enable_environment_variables ? local.env : {}
   enable_auto_branch_creation = true
+  platform =   var.platform
+  
+  build_spec          = templatefile("${path.module}/${var.framework}.tpl",{ build = var.build })
   auto_branch_creation_patterns = [
     "*",
     "*/**",
@@ -41,11 +51,16 @@ resource "aws_amplify_app" "example" {
     enable_auto_build = true
   }
 
-  custom_rule {
-    source = "</^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf|map|json)$)([^.]+$)/>"
-    status = "200"
-    target = "/index.html"
+  dynamic "custom_rule" {
+    for_each = var.framework != "Next" ? [1] : []
+    content {
+      source = "</^[^.]+$|\\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf|map|json)$)([^.]+$)/>"
+      status = "200"
+      target = "/index.html"
+    }
   }
+
+
   custom_rule {
     source = "/<*>"
     status = "404"
@@ -57,6 +72,7 @@ resource "aws_amplify_app" "example" {
 resource "aws_amplify_branch" "master" {
   app_id           = aws_amplify_app.example.id
   branch_name      = var.branch_name
+  framework           = local.frameworks
   enable_auto_build = true
   stage            = "PRODUCTION"
 }
