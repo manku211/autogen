@@ -33,6 +33,7 @@ locals {
 }
 
 resource "aws_amplify_app" "example" {
+  count =  var.app_id == "" ? 1 : 0
   name                        = var.app_name
   repository                  = var.existing_repo_url
   access_token                 = var.ssm_github_access_token_name
