@@ -65,6 +65,12 @@ variable "build" {
   default = "dist"
 }
 
+variable "app_id" {
+  description = "The name of the Amplify app"
+  type        = string
+  default     = ""
+}
+
 
 
 

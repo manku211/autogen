@@ -37,7 +37,7 @@ resource "aws_amplify_app" "example" {
   repository                  = var.existing_repo_url
   access_token                 = var.ssm_github_access_token_name
   enable_branch_auto_build    = true
-  environment_variables =       var.enable_environment_variables ? local.env : {}
+  # environment_variables =       var.enable_environment_variables ? local.env : {}
   enable_auto_branch_creation = true
   platform =   var.platform
   
@@ -70,28 +70,51 @@ resource "aws_amplify_app" "example" {
 }
 
 resource "aws_amplify_branch" "master" {
-  app_id           = aws_amplify_app.example.id
+  count =  var.app_id == "" ? 1 : 0
+  app_id           = aws_amplify_app.example[0].id
   branch_name      = var.branch_name
-  framework           = local.frameworks
   enable_auto_build = true
   stage            = "PRODUCTION"
+  environment_variables =       var.enable_environment_variables ? local.env : {}
+}
+
+resource "aws_amplify_branch" "branch" {
+  count =  var.app_id != "" ? 1 : 0
+  app_id           = var.app_id
+  branch_name      = var.branch_name
+  enable_auto_build = true
+  stage            = "DEVELOPMENT"
+  environment_variables =  var.enable_environment_variables ? local.env : {}
 }
 
 resource "aws_amplify_webhook" "master" {
-  app_id      = aws_amplify_app.example.id
-  branch_name = aws_amplify_branch.master.branch_name
-  description = "triggermaster"
+  count =  var.app_id == "" ? 1 : 0
+  app_id      = aws_amplify_app.example[0].id
+  branch_name = aws_amplify_branch.master[0].branch_name
+  description = "${var.branch_name}-trigger"
 
   provisioner "local-exec" {
-    command = "curl -X POST -d {} '${aws_amplify_webhook.master.url}&operation=startbuild' -H 'Content-Type:application/json'"
+    command = "curl -X POST -d {} '${aws_amplify_webhook.master[0].url}&operation=startbuild' -H 'Content-Type:application/json'"
+  }
+}
+
+
+resource "aws_amplify_webhook" "branch" {
+  count =  var.app_id != "" ? 1 : 0
+  app_id      = var.app_id
+  branch_name = aws_amplify_branch.branch[0].branch_name
+  description = "${var.branch_name}-trigger"
+
+  provisioner "local-exec" {
+    command = "curl -X POST -d {} '${aws_amplify_webhook.branch[0].url}&operation=startbuild' -H 'Content-Type:application/json'"
   }
 }
 
 output "default_domain" {
   description = "The amplify domain (non-custom)."
-  value       = aws_amplify_app.example.default_domain
+  value       =  var.app_id == "" ? aws_amplify_app.example[0].default_domain : aws_amplify_branch.branch[0].custom_domains
 }
 output "default_appid" {
   description = "The amplify app_id ."
-  value       = aws_amplify_app.example.id
+  value       =  var.app_id == "" ? aws_amplify_app.example[0].id : var.app_id
 }
