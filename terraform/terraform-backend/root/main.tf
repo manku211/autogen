@@ -26,6 +26,7 @@ module "ec2" {
   create_module_ec2 = var.create_ec2
   vpc_id            = module.vpc.vpc_id
   name = "${var.environment}-${var.project_name}"
+  key_name = var.key_name
   depends_on = [module.vpc]
 
 }

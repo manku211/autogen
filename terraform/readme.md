@@ -1,0 +1,1 @@
+add variable in terraform.auto.tfvars  az_count = 2 and create_ec2 = true for future..

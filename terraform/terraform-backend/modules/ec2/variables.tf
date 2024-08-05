@@ -89,3 +89,9 @@ variable "root_block_volume_size" {
   type        = number
   default     = 8
 }
+
+variable "key_name" {
+  description = "key name for the pem file"
+  type        = string
+  default     = "my_key"
+}

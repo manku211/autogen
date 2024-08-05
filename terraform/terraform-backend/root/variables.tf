@@ -1,9 +1,9 @@
-variable "aws_access_key" {
+variable "access_key" {
   description = "The AWS access key for the AWS provider"
   type        = string
 }
 
-variable "aws_secret_key" {
+variable "secret_key" {
   description = "The AWS secret key for the AWS provider"
   type        = string
   sensitive   = true
@@ -100,4 +100,10 @@ variable "create_ec2" {
   description = "create ec2 or not"
   type        = bool
   default     = true
+}
+
+variable "key_name" {
+  description = "key name for the pem file"
+  type        = string
+  default     = "my_key"
 }

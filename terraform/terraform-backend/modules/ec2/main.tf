@@ -54,12 +54,12 @@ resource "tls_private_key" "pk" {
 
 resource "aws_key_pair" "kp" {
   count = var.create_module_ec2 ? 1 : 0  
-  key_name   = "${var.name}-key"    # Create a "myKey" to AWS!!
+  key_name   = var.key_name    # Create a "myKey" to AWS!!
   public_key = tls_private_key.pk[0].public_key_openssh
 }
 resource "local_file" "ssh_key" {
   count = var.create_module_ec2 ? 1 : 0  
-  filename = "${aws_key_pair.kp[0].key_name}.pem"
+  filename = "${var.key_name}.pem"
   content = tls_private_key.pk[0].private_key_pem
 }
 
