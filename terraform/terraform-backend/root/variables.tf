@@ -107,3 +107,16 @@ variable "key_name" {
   type        = string
   default     = "my_key"
 }
+
+variable "instance_type" {
+  description = "The type of instance to create"
+  type        = string
+  default     = "t2.small"
+}
+
+variable "ami_id" {
+  description = "The ID of the AMI to use for the instance"
+  type        = string
+  default     = "ami-03972092c42e8c0ca"  # Example AMI, change to your desired AMI
+}
+

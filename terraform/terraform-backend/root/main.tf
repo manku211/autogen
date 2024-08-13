@@ -1,5 +1,6 @@
 module "vpc" {
   source = "../modules/vpc"
+  count       = var.vpc_id == "" ? 1 : 0 
   name = "${var.environment}-${var.project_name}"
   cidr_block = var.cidr_block
   enable_dns_support   = var.enable_dns_support
@@ -22,11 +23,13 @@ module "vpc" {
 }
 
 module "ec2" {
-  source = "../modules/ec2"
+  source            = "../modules/ec2"
   create_module_ec2 = var.create_ec2
-  vpc_id            = module.vpc.vpc_id
-  name = "${var.environment}-${var.project_name}"
-  key_name = var.key_name
-  depends_on = [module.vpc]
-
+  vpc_id            = var.vpc_id != "" ? var.vpc_id : module.vpc[0].vpc_id
+  name              = "${var.environment}-${var.project_name}"
+  key_name          = var.key_name
+  instance_type     = var.instance_type
+  ami_id            = var.ami_id
+  depends_on        = [module.vpc]
 }
+
