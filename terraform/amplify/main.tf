@@ -51,6 +51,9 @@ resource "aws_amplify_app" "example" {
     # Enable auto build for the created branch.
     enable_auto_build = true
   }
+  environment_variables = {
+    "_CUSTOM_IMAGE" = "node:22",
+  }
 
   dynamic "custom_rule" {
     for_each = var.framework != "Next" ? [1] : []
